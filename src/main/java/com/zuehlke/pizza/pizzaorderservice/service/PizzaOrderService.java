@@ -16,11 +16,14 @@ public class PizzaOrderService {
 
    private final OrderRepository database;
 
+   private final PizzaInventoryClient pizzaInventoryClient;
+
    private final Random random = new Random();
 
    @Autowired
-   public PizzaOrderService(OrderRepository database) {
+   public PizzaOrderService(OrderRepository database, PizzaInventoryClient pizzaInventoryClient) {
       this.database = database;
+      this.pizzaInventoryClient = pizzaInventoryClient;
    }
 
    public List<Order> searchOrders() {
@@ -39,8 +42,15 @@ public class PizzaOrderService {
       var id = database.nextAvailableId();
       var orderItem = generateOrderItem();
 
-      database.addOrder(new Order(id, List.of(orderItem)));
+      addOrder(new Order(id, List.of(orderItem)));
+   }
 
+   public void addOrder(Order order) {
+      boolean allAvailable = order.orderItems().stream().map(OrderItem::pizzaType).allMatch(pizzaInventoryClient::isAvailable);
+      if (!allAvailable) {
+         throw new IllegalStateException("Not all Pizzas are available");
+      }
+      database.addOrder(order);
    }
 
    private OrderItem generateOrderItem() {
