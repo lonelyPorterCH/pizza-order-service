@@ -1,9 +1,13 @@
 package com.zuehlke.pizza.pizzaorderservice.controller;
 
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +28,11 @@ public class PizzaOrderRestController {
    @Autowired
    public PizzaOrderRestController(PizzaOrderService pizzaOrderService) {
       this.pizzaOrderService = pizzaOrderService;
+   }
+
+   @ExceptionHandler(IllegalArgumentException.class)
+   public ResponseEntity<ProblemDto> handleIllegalArgumentException(IllegalArgumentException exception) {
+      return ResponseEntity.status(NOT_FOUND).body(new ProblemDto(exception.getMessage()));
    }
 
    @GetMapping
