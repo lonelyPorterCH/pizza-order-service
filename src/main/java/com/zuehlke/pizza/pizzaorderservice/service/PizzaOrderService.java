@@ -34,7 +34,7 @@ public class PizzaOrderService {
       this.orderProcessors = orderProcessors
          .stream()
          .collect(Collectors.toMap(
-            OrderProcessor::handledChannel,
+            OrderProcessor::canHandle,
             Function.identity()
          ));
    }

@@ -8,7 +8,7 @@ import com.zuehlke.pizza.pizzaorderservice.domain.Channel;
 public class MobileOrderProcessor implements OrderProcessor {
 
    @Override
-   public Channel handledChannel() {
+   public Channel canHandle() {
       return Channel.MOBILE;
    }
 

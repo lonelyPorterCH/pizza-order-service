@@ -8,7 +8,7 @@ import com.zuehlke.pizza.pizzaorderservice.domain.Channel;
 public class WebOrderProcessor implements OrderProcessor {
 
    @Override
-   public Channel handledChannel() {
+   public Channel canHandle() {
       return Channel.WEB;
    }
 
