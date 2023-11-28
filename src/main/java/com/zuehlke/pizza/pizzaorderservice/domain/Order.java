@@ -8,4 +8,10 @@ public record Order(int id, List<OrderItem> orderItems, Channel channel) {
       return orderItems.stream().anyMatch(orderItem -> orderItem.pizzaType().equals(pizzaType));
    }
 
+   public int getTotalQuantityOfOrderedPizzas() {
+      return orderItems.stream()
+         .mapToInt(OrderItem::amount)
+         .sum();
+   }
+
 }
