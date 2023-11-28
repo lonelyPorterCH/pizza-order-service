@@ -1,7 +1,10 @@
 package com.zuehlke.pizza.pizzaorderservice.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +23,7 @@ public class PizzaOrderService {
 
    private final PizzaInventoryClient pizzaInventoryClient;
 
-   private final List<OrderProcessor> orderProcessors;
+   private final Map<Channel, OrderProcessor> orderProcessors;
 
    private final Random random = new Random();
 
@@ -28,7 +31,12 @@ public class PizzaOrderService {
    public PizzaOrderService(OrderRepository database, PizzaInventoryClient pizzaInventoryClient, List<OrderProcessor> orderProcessors) {
       this.database = database;
       this.pizzaInventoryClient = pizzaInventoryClient;
-      this.orderProcessors = orderProcessors;
+      this.orderProcessors = orderProcessors
+         .stream()
+         .collect(Collectors.toMap(
+            OrderProcessor::handledChannel,
+            Function.identity()
+         ));
    }
 
    public List<Order> searchOrders() {
@@ -63,12 +71,14 @@ public class PizzaOrderService {
       if (!allAvailable) {
          throw new IllegalStateException("Not all Pizzas are available");
       }
-      System.out.println(orderProcessors);
-      orderProcessors.stream()
-         .filter(orderProcessor -> orderProcessor.handledChannel().equals(order.channel()))
-         .findFirst()
-         .ifPresent(orderProcessor -> orderProcessor.processOrder(order));
-      database.addOrder(order);
+
+      OrderProcessor processor = orderProcessors.get(order.channel());
+      if (processor != null) {
+         processor.processOrder(order);
+         database.addOrder(order);
+      } else {
+         throw new IllegalArgumentException("Unsupported order channel: " + order.channel());
+      }
    }
 
    private OrderItem generateOrderItem() {
