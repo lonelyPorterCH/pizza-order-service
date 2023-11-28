@@ -15,6 +15,6 @@ public interface OrderRepository {
 
    void addOrder(Order order);
 
-   int nextAvailableId();
+   long nextAvailableId();
 
 }

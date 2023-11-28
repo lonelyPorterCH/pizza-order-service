@@ -28,12 +28,13 @@ public class PersistenceOrderRepository implements OrderRepository {
 
    @Override
    public void addOrder(Order order) {
+      System.out.println("Saving order to MongoDB: " + order.id());
       repository.save(OrderMapper.map(order));
    }
 
    @Override
-   public int nextAvailableId() {
-      throw new UnsupportedOperationException();
+   public long nextAvailableId() {
+      return repository.count() + 1;
    }
 
    @Override

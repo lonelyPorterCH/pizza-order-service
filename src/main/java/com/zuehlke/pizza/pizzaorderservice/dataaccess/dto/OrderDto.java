@@ -16,15 +16,15 @@ public class OrderDto {
    private final Channel channel;
 
    @Id
-   private int id;
+   private long id;
 
-   public OrderDto(int id, List<OrderItem> orderItems, Channel channel) {
+   public OrderDto(long id, List<OrderItem> orderItems, Channel channel) {
       this.id = id;
       this.orderItems = orderItems;
       this.channel = channel;
    }
 
-   public int getId() {
+   public long getId() {
       return id;
    }
 

@@ -45,11 +45,11 @@ public class InMemoryOrderRepository implements OrderRepository {
    }
 
    @Override
-   public int nextAvailableId() {
+   public long nextAvailableId() {
       return count + 1;
    }
 
-   private Optional<Order> searchOrder(int id) {
+   private Optional<Order> searchOrder(long id) {
       return DATABASE.stream()
          .filter(order -> id == order.id())
          .findFirst();
