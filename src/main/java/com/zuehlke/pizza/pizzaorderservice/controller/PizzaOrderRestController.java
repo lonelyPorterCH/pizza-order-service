@@ -44,6 +44,7 @@ public class PizzaOrderRestController {
    @PostMapping("generate")
    @ResponseStatus(value = HttpStatus.NO_CONTENT)
    public void generatePizzaOrder() {
+      System.out.println("generating order");
       pizzaOrderService.generateOrder();
    }
 

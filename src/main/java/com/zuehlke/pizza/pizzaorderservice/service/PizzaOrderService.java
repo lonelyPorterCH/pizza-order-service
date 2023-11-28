@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zuehlke.pizza.pizzaorderservice.dataaccess.OrderRepository;
+import com.zuehlke.pizza.pizzaorderservice.domain.Channel;
 import com.zuehlke.pizza.pizzaorderservice.domain.Order;
 import com.zuehlke.pizza.pizzaorderservice.domain.OrderItem;
 import com.zuehlke.pizza.pizzaorderservice.domain.PizzaType;
+import com.zuehlke.pizza.pizzaorderservice.service.processor.OrderProcessor;
 
 @Service
 public class PizzaOrderService {
@@ -18,12 +20,15 @@ public class PizzaOrderService {
 
    private final PizzaInventoryClient pizzaInventoryClient;
 
+   private final List<OrderProcessor> orderProcessors;
+
    private final Random random = new Random();
 
    @Autowired
-   public PizzaOrderService(OrderRepository database, PizzaInventoryClient pizzaInventoryClient) {
+   public PizzaOrderService(OrderRepository database, PizzaInventoryClient pizzaInventoryClient, List<OrderProcessor> orderProcessors) {
       this.database = database;
       this.pizzaInventoryClient = pizzaInventoryClient;
+      this.orderProcessors = orderProcessors;
    }
 
    public List<Order> searchOrders() {
@@ -41,8 +46,16 @@ public class PizzaOrderService {
    public void generateOrder() {
       var id = database.nextAvailableId();
       var orderItem = generateOrderItem();
+      var channel = generateOrderChannel();
 
-      addOrder(new Order(id, List.of(orderItem)));
+      addOrder(new Order(id, List.of(orderItem), channel));
+   }
+
+   private Channel generateOrderChannel() {
+      var channels = Channel.values();
+      int index = random.nextInt(channels.length);
+
+      return channels[index];
    }
 
    public void addOrder(Order order) {
@@ -50,6 +63,11 @@ public class PizzaOrderService {
       if (!allAvailable) {
          throw new IllegalStateException("Not all Pizzas are available");
       }
+      System.out.println(orderProcessors);
+      orderProcessors.stream()
+         .filter(orderProcessor -> orderProcessor.handledChannel().equals(order.channel()))
+         .findFirst()
+         .ifPresent(orderProcessor -> orderProcessor.processOrder(order));
       database.addOrder(order);
    }
 

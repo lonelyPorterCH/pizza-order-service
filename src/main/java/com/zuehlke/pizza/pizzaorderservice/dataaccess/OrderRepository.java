@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
+import com.zuehlke.pizza.pizzaorderservice.domain.Channel;
 import com.zuehlke.pizza.pizzaorderservice.domain.Order;
 import com.zuehlke.pizza.pizzaorderservice.domain.OrderItem;
 import com.zuehlke.pizza.pizzaorderservice.domain.PizzaType;
@@ -13,7 +14,7 @@ import com.zuehlke.pizza.pizzaorderservice.domain.PizzaType;
 @Repository
 public class OrderRepository {
 
-   private final List<Order> DATABASE = new ArrayList<>(List.of(new Order(1, List.of(new OrderItem(1, PizzaType.MARGHERITA)))));
+   private final List<Order> DATABASE = new ArrayList<>(List.of(new Order(1, List.of(new OrderItem(1, PizzaType.MARGHERITA)), Channel.INTERNAL)));
 
    private int count = 1;
 
