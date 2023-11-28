@@ -41,8 +41,8 @@ public class PizzaOrderRestController {
       return pizzaOrderService.getOrdersByType(pizzaType);
    }
 
-   @PostMapping("generate")
-   @ResponseStatus(value = HttpStatus.NO_CONTENT)
+   @PostMapping("/generate")
+   @ResponseStatus(value = HttpStatus.CREATED)
    public void generatePizzaOrder() {
       System.out.println("generating order");
       pizzaOrderService.generateOrder();
