@@ -1,51 +1,20 @@
 package com.zuehlke.pizza.pizzaorderservice.dataaccess;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.stereotype.Repository;
-
-import com.zuehlke.pizza.pizzaorderservice.domain.Channel;
 import com.zuehlke.pizza.pizzaorderservice.domain.Order;
-import com.zuehlke.pizza.pizzaorderservice.domain.OrderItem;
 import com.zuehlke.pizza.pizzaorderservice.domain.PizzaType;
 
-@Repository
-public class OrderRepository {
+public interface OrderRepository {
 
-   private final List<Order> DATABASE = new ArrayList<>(List.of(new Order(1, List.of(new OrderItem(1, PizzaType.MARGHERITA)), Channel.INTERNAL)));
+   List<Order> getAllOrders();
 
-   private int count = 1;
+   Order getOrderById(int id);
 
-   public List<Order> getAllOrders() {
-      return List.copyOf(DATABASE);
-   }
+   List<Order> getOrdersByType(PizzaType pizzaType);
 
-   public Order getOrderById(int id) {
-      return searchOrder(id).orElseThrow(() -> new IllegalArgumentException("Order " + id + " does not exist"));
-   }
+   void addOrder(Order order);
 
-   public List<Order> getOrdersByType(PizzaType pizzaType) {
-      return DATABASE.stream().filter(order -> order.contains(pizzaType)).toList();
-   }
-
-   public void addOrder(Order order) {
-      if (searchOrder(order.id()).isPresent()) {
-         throw new IllegalArgumentException("Order " + order.id() + " already exists");
-      }
-      DATABASE.add(order);
-      count++;
-   }
-
-   public int nextAvailableId() {
-      return count + 1;
-   }
-
-   private Optional<Order> searchOrder(int id) {
-      return DATABASE.stream()
-         .filter(order -> id == order.id())
-         .findFirst();
-   }
+   int nextAvailableId();
 
 }
